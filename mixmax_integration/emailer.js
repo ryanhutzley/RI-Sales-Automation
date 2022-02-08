@@ -9,7 +9,7 @@ SDR_OWNERS = {
     'Ellen Scott-Young': [process.env.ELLEN_YARON_SINGER_API, process.env.ELLEN_YARON_S_API],
     'Katherine Hess': [process.env.KAT_YS_API],
     'Sophia Serseri': [process.env.SOPHIA_YSINGER_API, process.env.SOPHIA_Y_DASH_SINGER_API],
-    'Ryan Hutzley': [process.env.RYAN_YARON_SINGER_API, RYAN_YSING_API]
+    'Ryan Hutzley': [process.env.RYAN_YARON_SINGER_API, process.env.RYAN_YSING_API]
 }
 
 const contacts = []
@@ -23,7 +23,7 @@ conn.login(process.env.USERNAME, process.env.PASSWORD + process.env.TOKEN, funct
         WHERE LastActivityDate != LAST_N_DAYS:60
         AND (EMAIL != null)
         AND (NOT Title LIKE '%vp%')
-        AND (NOT Title LIKE '%CTO%')
+        AND (NOT Title LIKE 'CTO')
         AND (NOT Title LIKE '%CEO%')
         AND (NOT Title LIKE '%CPO%')
         AND (NOT Title LIKE '%CDO%')
@@ -35,6 +35,7 @@ conn.login(process.env.USERNAME, process.env.PASSWORD + process.env.TOKEN, funct
         NOT IN ('Bad Fit', 'Competitor', 'Active Opportunity', 'Closed Lost Opportunity', 'MLOps Company', 'Customer')
     `, function (err, res) {
         if (err) { return console.error(err) }
+        console.log(res.totalSize)
         contacts.push(...res.records)
         if (!res.done) {
             getMore(res.nextRecordsUrl)
@@ -74,26 +75,27 @@ function sortAndSend(contacts) {
             return contact
         })
         if (recipients.length > 0 && recipients.length <= 50) {
-            addUserToMixmax(recipients, SDR_OWNERS[key][0])
+            addUserToMixmax(recipients, SDR_OWNERS[key][0], key)
         }
         else if (recipients.length > 100 && SDR_OWNERS[key][1]) {
-            addUserToMixmax(recipients.slice(0, 50), SDR_OWNERS[key][0])
-            addUserToMixmax(recipients.slice(50, 100), SDR_OWNERS[key][1])
+            addUserToMixmax(recipients.slice(0, 50), SDR_OWNERS[key][0], key)
+            addUserToMixmax(recipients.slice(50, 100), SDR_OWNERS[key][1], key)
         }
         else if (recipients.length > 50 && SDR_OWNERS[key][1]) {
-            addUserToMixmax(recipients.slice(0, 50), SDR_OWNERS[key][0])
-            addUserToMixmax(recipients.slice(50), SDR_OWNERS[key][1])
+            addUserToMixmax(recipients.slice(0, 50), SDR_OWNERS[key][0], key)
+            addUserToMixmax(recipients.slice(50), SDR_OWNERS[key][1], key)
         }
         else if (recipients.length > 50) {
-            addUserToMixmax(recipients.slice(0, 50), SDR_OWNERS[key][0])
+            addUserToMixmax(recipients.slice(0, 50), SDR_OWNERS[key][0], key)
         }
     }
 }
 
-async function addUserToMixmax(recipients, API) {
+async function addUserToMixmax(recipients, API, key) {
     const api = new MixmaxAPI(API);
-    const sequenceId = '61f2ed040915b49be51a23c8';
+    const sequenceId = '6201c6e51fe985075676ae95';
     const sequence = api.sequences.sequence(sequenceId);
-    const promise = await sequence.addRecipients(recipients);
-    console.log(promise)
+    const res = await sequence.addRecipients(recipients);
+    const successes = res.filter(recipient => recipient.status === 'success')
+    console.log(`${key}: ${successes.length}/${res.length} sent successfully`)
 }
