@@ -49,42 +49,30 @@ sheet = service.spreadsheets()
 contacts_no_email = sheet.values().get(spreadsheetId=UNDERWORKED_DATABEES, range='Matched Contacts w/o Email - To Upsert!A:F').execute()
 contacts_to_upsert_no_email = contacts_no_email.get('values', [])
 contacts_to_upsert_no_email.pop(0)
-upsert_contacts(sf, contacts_to_upsert_no_email)
-print('Done with contacts_to_upsert_no_email')
 
 contacts_email = sheet.values().get(spreadsheetId=UNDERWORKED_DATABEES, range='Matched Contacts w/ Email - To Upsert!A:G').execute()
 contacts_to_upsert_email = contacts_email.get('values', [])
 contacts_to_upsert_email.pop(0)
-upsert_contacts(sf, contacts_to_upsert_email)
-print('Done with contacts_to_upsert_email')
 
 additional_contacts_no_email = sheet.values().get(spreadsheetId=ALL_INDUSTRIES_DATABEES, range='Matched Contacts w/o Email - To Upsert!A:Q').execute()
 added_contacts_no_email = additional_contacts_no_email.get('values', [])
 added_contacts_no_email.pop(0)
 formatted_added_no_email = [[row[1].strip(), row[6].strip(), row[12].strip(), row[13].strip(), row[15].strip(), row[14].strip()] for row in added_contacts_no_email]
-upsert_contacts(sf, formatted_added_no_email)
-print('Done with formatted_added_no_email')
 
 additional_contacts_email = sheet.values().get(spreadsheetId=ALL_INDUSTRIES_DATABEES, range='Matched Contacts w/ Email - To Upsert!A:R').execute()
 added_contacts_email = additional_contacts_email.get('values', [])
 added_contacts_email.pop(0)
 formatted_added_email = [[row[1].strip(), row[6].strip(), row[12].strip(), row[13].strip(), row[15].strip(), row[14].strip(), row[16].strip()] for row in added_contacts_email]
-upsert_contacts(sf, formatted_added_email)
-print('Done with formatted_added_email')
 
 # nlp_contacts_email = sheet.values().get(spreadsheetId=NLP_DATABEES, range='Underworked: Contacts w/ Email - To Upsert!A:J').execute()
 # nlp_email = nlp_contacts_email.get('values', [])
 # nlp_email.pop(0)
 # formatted_nlp_email = [[row[0].strip(), row[3].strip(), row[4].strip(), row[5].strip(), row[7].strip(), row[6].strip(), row[8].strip()] for row in nlp_email]
-# upsert_contacts(sf, formatted_nlp_email)
-# print('Done with formatted_nlp_email')
 
 nlp_contacts_no_email = sheet.values().get(spreadsheetId=NLP_DATABEES, range='Underworked: Contacts w/o Email - To Upsert!A:I').execute()
 nlp_no_email = nlp_contacts_no_email.get('values', [])
 nlp_no_email.pop(0)
 formatted_nlp_no_email = [[row[0].strip(), row[3].strip(), row[4].strip(), row[5].strip(), row[7].strip(), row[6].strip()] for row in nlp_no_email]
-upsert_contacts(sf, formatted_nlp_no_email)
-print('Done with formatted_nlp_no_email')
 
 ############ COMPANY/CONTACT LINKEDIN UPDATES #############
 
@@ -92,15 +80,11 @@ company_linkedinURLs = sheet.values().get(spreadsheetId=NO_LINKEDIN, range='Acco
 company_URLs = company_linkedinURLs.get('values', [])
 company_URLs.pop(0)
 formatted_company_URLs = [{'Id': row[0], 'Company_LinkedIn_URL__c': row[1]} for row in company_URLs]
-sf.bulk.Account.update(formatted_company_URLs, batch_size=10000, use_serial=False)
-print('Done with Account LinkedInURL updates')
 
 contact_linkedinURLs = sheet.values().get(spreadsheetId=NO_LINKEDIN, range='Contacts: Contact LinkedIn URL!A:C').execute()
 contact_URLs = contact_linkedinURLs.get('values', [])
 contact_URLs.pop(0)
 formatted_contact_URLs = [{'Id': row[0], 'Contact_LinkedIn_URL__c': row[1]} for row in contact_URLs]
-sf.bulk.Contact.update(formatted_contact_URLs, batch_size=10000, use_serial=False)
-print('Done with Contact LinkedInURL updates')
 
 ################# ACCOUNT TAGS UPDATES ####################
 
@@ -108,8 +92,6 @@ accounts_with_tags = sheet.values().get(spreadsheetId=UNDERWORKED_DATABEES, rang
 accounts_with_matching_tags = accounts_with_tags.get('values', [])
 accounts_with_matching_tags.pop(0)
 formatted_accounts_with_matching_tags = [{'Id': row[0], 'Account_Hashtag__c': row[1]} for row in accounts_with_matching_tags]
-sf.bulk.Account.update(formatted_accounts_with_matching_tags, batch_size=10000, use_serial=False)
-print('Done with Account tag updates')
 
 # nlp_account_tags_update = sheet.values().get(spreadsheetId=NLP_DATABEES, range='Underworked: Accounts to Update!A:C').execute()
 # nlp_tags_update = nlp_account_tags_update.get('values', [])
@@ -128,3 +110,32 @@ print('Done with Account tag updates')
 # databees_sheet_update = sheet.values().append(spreadsheetId=BOUNCED_EMAIL_CONTACTS, range='Bounced Email Contacts Databees', valueInputOption='USER_ENTERED', body={'values': bounced_contacts_sf}).execute()
 
 # sf.bulk.Contact.update(formatted_bounced_contacts_sf, batch_size=10000, use_serial=False)
+
+############ UPDATE FUNCTION INVOCATIONS #############
+
+upsert_contacts(sf, contacts_to_upsert_no_email)
+print('Done with contacts_to_upsert_no_email')
+
+upsert_contacts(sf, contacts_to_upsert_email)
+print('Done with contacts_to_upsert_email')
+
+upsert_contacts(sf, formatted_added_no_email)
+print('Done with formatted_added_no_email')
+
+upsert_contacts(sf, formatted_added_email)
+print('Done with formatted_added_email')
+
+# upsert_contacts(sf, formatted_nlp_email)
+# print('Done with formatted_nlp_email')
+
+upsert_contacts(sf, formatted_nlp_no_email)
+print('Done with formatted_nlp_no_email')
+
+sf.bulk.Account.update(formatted_company_URLs, batch_size=10000, use_serial=False)
+print('Done with Account LinkedInURL updates')
+
+sf.bulk.Contact.update(formatted_contact_URLs, batch_size=10000, use_serial=False)
+print('Done with Contact LinkedInURL updates')
+
+sf.bulk.Account.update(formatted_accounts_with_matching_tags, batch_size=10000, use_serial=False)
+print('Done with Account tag updates')
