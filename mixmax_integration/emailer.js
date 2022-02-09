@@ -6,10 +6,11 @@ const jsforce = require('jsforce');
 SENIORITY_LEVEL = {}
 
 SDR_OWNERS = {
-    'Ellen Scott-Young': [process.env.ELLEN_YARON_SINGER_API, process.env.ELLEN_YARON_S_API],
+    'Ellen Scott-Young': [process.env.ELLEN_YARON_SINGER_API],
     'Katherine Hess': [process.env.KAT_YS_API],
-    'Sophia Serseri': [process.env.SOPHIA_YSINGER_API, process.env.SOPHIA_Y_DASH_SINGER_API],
-    'Ryan Hutzley': [process.env.RYAN_YARON_SINGER_API, process.env.RYAN_YSING_API]
+    'Sophia Serseri': [process.env.SOPHIA_YSINGER_API],
+    'Ryan Hutzley': [process.env.RYAN_YARON_SINGER_API],
+    'Mark Levinson': [process.env.MARK_YARON_SINGER_API]
 }
 
 const contacts = []
@@ -75,17 +76,21 @@ function sortAndSend(contacts) {
             return contact
         })
         if (recipients.length > 0 && recipients.length <= 50) {
+            // console.log(`${key}: ${recipients.length}`)
             addUserToMixmax(recipients, SDR_OWNERS[key][0], key)
         }
         else if (recipients.length > 100 && SDR_OWNERS[key][1]) {
+            // console.log(`${key}: ${recipients.length}`)
             addUserToMixmax(recipients.slice(0, 50), SDR_OWNERS[key][0], key)
             addUserToMixmax(recipients.slice(50, 100), SDR_OWNERS[key][1], key)
         }
         else if (recipients.length > 50 && SDR_OWNERS[key][1]) {
+            // console.log(`${key}: ${recipients.length}`)
             addUserToMixmax(recipients.slice(0, 50), SDR_OWNERS[key][0], key)
             addUserToMixmax(recipients.slice(50), SDR_OWNERS[key][1], key)
         }
         else if (recipients.length > 50) {
+            // console.log(`${key}: ${recipients.length}`)
             addUserToMixmax(recipients.slice(0, 50), SDR_OWNERS[key][0], key)
         }
     }
@@ -93,9 +98,9 @@ function sortAndSend(contacts) {
 
 async function addUserToMixmax(recipients, API, key) {
     const api = new MixmaxAPI(API);
-    const sequenceId = '6201c6e51fe985075676ae95';
+    const sequenceId = '61f2ed040915b49be51a23c8';
     const sequence = api.sequences.sequence(sequenceId);
     const res = await sequence.addRecipients(recipients);
     const successes = res.filter(recipient => recipient.status === 'success')
-    console.log(`${key}: ${successes.length}/${res.length} sent successfully`)
+    console.log(`${key}: ${successes.length} sent successfully, ${recipients.length - successes.length} failed`)
 }
