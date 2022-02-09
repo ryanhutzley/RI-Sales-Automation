@@ -98,7 +98,7 @@ function sortAndSend(contacts) {
 
 async function addUserToMixmax(recipients, API, key) {
     const api = new MixmaxAPI(API);
-    const sequenceId = '61f2ed040915b49be51a23c8';
+    const sequenceId = '6201c6e51fe985075676ae95';
     const sequence = api.sequences.sequence(sequenceId);
     const res = await sequence.addRecipients(recipients);
     const successes = res.filter(recipient => recipient.status === 'success')
