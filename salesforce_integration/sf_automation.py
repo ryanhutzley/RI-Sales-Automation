@@ -4,7 +4,7 @@ from google.oauth2 import service_account
 from dotenv import load_dotenv
 import os
 
-from sf_methods import upsertContacts, upsertFormattedContacts, linkedinUpdate, updateAccountTags
+from sf_methods import upsertContacts, upsertFormattedContacts, linkedinUpdate, updateAccountTags, updateContacts
 
 load_dotenv("../.env")
 
@@ -28,6 +28,7 @@ sheet = service.spreadsheets()
 # BOUNCED_EMAIL_CONTACTS = ['1ed0Tffluu89Xm3Om47Otc5SHR1z8G4j6xNJwZnjPbPg', 'Bounced Email Contacts!A:J']
 
 SHEET_IDS = {
+    'BOUNCED_EMAILS_MERGE': ['1WJD0vJWokExILrHILdVVzxTyoVjGgXSo-2XERIMURvw', 'Given Contacts!L:S'],
     'UNDERWORKED_DATABEES': ['1W1BbZTpBSGlg4nW5OZ_13SR2JBFJtlX9J6hjjo_4kIo', 'Matched Contacts w/o Email - To Upsert!A:F', 'Matched Contacts w/ Email - To Upsert!A:G', 'Accounts to Update!A:C'],
     'NEW_NLP_DATABEES_MERGE': ['13owKMVnEIzS5rXKPG8xfqcxKm9C08a4Gumpn5fcDyCc', 'Matched Contacts w/o Email - To Upsert!A:Q', 'Matched Contacts w/ Email - To Upsert!A:R', 'Matched Accounts - To Update!K:M'],
     'ALL_INDUSTRIES_DATABEES': ['1JrWhimitcDUro-N1nqiU8ZrIsxzyiWP2kOgQegdQW9w', 'Matched Contacts w/o Email - To Upsert!A:Q', 'Matched Contacts w/ Email - To Upsert!A:R'],
@@ -45,6 +46,10 @@ for key, sheet_info in SHEET_IDS.items():
         contact_urls = sheet.values().get(spreadsheetId=sheet_id, range=sheet_info[2]).execute().get('values', [])
         linkedinUpdate(True, contact_urls, sf)
         print('Done with Contact LinkedIn Updates')
+    elif key == 'BOUNCED_EMAILS_MERGE':
+        # bounced_given_contacts = sheet.values().get(spreadsheetId=sheet_id, range=sheet_info[1]).execute().get('values', [])
+        # updateContacts(sf, bounced_given_contacts)
+        print(f'Done with {key} Given Contact updates')
     else:
         no_email = sheet.values().get(spreadsheetId=sheet_id, range=sheet_info[1]).execute().get('values', [])
         email = sheet.values().get(spreadsheetId=sheet_id, range=sheet_info[2]).execute().get('values', [])
