@@ -1,6 +1,6 @@
 from simple_salesforce.exceptions import SalesforceMalformedRequest, SalesforceResourceNotFound
 
-def upsertContacts(sf, contacts):
+def upsertContacts(contacts, sf):
 
     for row in contacts:
 
@@ -50,16 +50,17 @@ def upsertContacts(sf, contacts):
                 print(f'COULD NOT BE UPDATED: {contact_id} {first_name} {last_name}')
 
 
-def updateContacts(sf, contacts):
+def updateContacts(contacts, sf):
+
     contacts.pop(0)
     formatted_contact_info = [{'Id': row[0], 'FirstName': row[1], 'LastName': row[2], 'Email': row[3], 'Title': row[5], 'Contact_LinkedIn_URL__c': row[6]} for row in contacts]
-    # sf.bulk.Contact.update(formatted_contact_info, batch_size=10000, use_serial=False)
+    sf.bulk.Contact.update(formatted_contact_info, batch_size=10000, use_serial=False)
 
 
-def upsertFormattedContacts(is_email, data, sf):
+def upsertFormattedContacts(has_email, data, sf):
 
     data.pop(0)
-    if is_email: 
+    if has_email: 
         formatted_data_email = [[row[1].strip(), row[6].strip(), row[12].strip(), row[13].strip(), row[15].strip(), row[14].strip(), row[16].strip()] for row in data]
         upsertContacts(sf, formatted_data_email)
     else:
