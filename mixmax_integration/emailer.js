@@ -1,24 +1,30 @@
-const path = require('path').resolve(__dirname + '/..')
-require('dotenv').config({ path: path + '/.env' })
-const MixmaxAPI = require('mixmax-api');
-const jsforce = require('jsforce');
+const path = require("path").resolve(__dirname + "/..");
+require("dotenv").config({ path: path + "/.env" });
+const MixmaxAPI = require("mixmax-api");
+const jsforce = require("jsforce");
 
-SENIORITY_LEVEL = {}
+SENIORITY_LEVEL = {};
 
 SDR_OWNERS = {
-	'Ellen Scott-Young': [process.env.ELLEN_YARONSINGER_API],
-	'Katherine Hess': [process.env.KAT_YARON_S_API],
-	'Sophia Serseri': [process.env.SOPHIA_YSINGER_API],
-	'Ryan Hutzley': [process.env.RYAN_YARON_DASH_SINGER_API],
-	'Mark Levinson': [process.env.MARK_YARON_SINGER_API]
-}
+	"Ellen Scott-Young": [process.env.ELLEN_YARONSINGER_API],
+	"Katherine Hess": [process.env.KAT_YARON_S_API],
+	"Sophia Serseri": [process.env.SOPHIA_YSINGER_API],
+	"Ryan Hutzley": [process.env.RYAN_YARON_DASH_SINGER_API],
+	"Mark Levinson": [process.env.MARK_YARON_SINGER_API],
+};
 
-const contacts = []
+const contacts = [];
 
 const conn = new jsforce.Connection();
-conn.login(process.env.USERNAME, process.env.PASSWORD + process.env.TOKEN, function (err, res) {
-	if (err) { return console.error(err); }
-	conn.query(`
+conn.login(
+	process.env.USERNAME,
+	process.env.PASSWORD + process.env.TOKEN,
+	function (err, res) {
+		if (err) {
+			return console.error(err);
+		}
+		conn.query(
+			`
         SELECT FirstName, Email, Account.Name, Account.SDR_Owner__c, Title
         FROM CONTACT
         WHERE LastActivityDate != LAST_N_DAYS:60
@@ -34,73 +40,82 @@ conn.login(process.env.USERNAME, process.env.PASSWORD + process.env.TOKEN, funct
         AND Account.SDR_Owner__c != null
         AND Account.Account_Status__c
         NOT IN ('Bad Fit', 'Competitor', 'Active Opportunity', 'Closed Lost Opportunity', 'MLOps Company', 'Customer')
-    `, function (err, res) {
-		if (err) { return console.error(err) }
-		console.log(res.totalSize)
-		contacts.push(...res.records)
-		if (!res.done) {
-			getMore(res.nextRecordsUrl)
-		}
-	});
-});
+        `,
+			function (err, res) {
+				if (err) {
+					return console.error(err);
+				}
+				console.log(res.totalSize);
+				contacts.push(...res.records);
+				if (!res.done) {
+					getMore(res.nextRecordsUrl);
+				}
+			}
+		);
+	}
+);
 
 function getMore(nextRecordsUrl) {
 	conn.queryMore(nextRecordsUrl, function (err, res) {
-		if (err) { return console.error(err) }
-		contacts.push(...res.records)
-		if (!res.done) {
-			getMore(res.nextRecordsUrl)
-		} else if (res.done) {
-			sortAndSend(contacts)
+		if (err) {
+			return console.error(err);
 		}
-	})
+		contacts.push(...res.records);
+		if (!res.done) {
+			getMore(res.nextRecordsUrl);
+		} else if (res.done) {
+			// sortAndSend(contacts)
+		}
+	});
 }
 
 function sortAndSend(contacts) {
-	let formatted_contacts = contacts.map(contact => {
+	let formatted_contacts = contacts.map((contact) => {
 		const newObj = {
-			'SDR Owner': contact['Account']['SDR_Owner__c'],
-			'email': contact['Email'],
-			'variables': {
-				'SFDC Account: Account Name': contact['Account']['Name'],
-				'First Name': contact['FirstName']
-			}
-		}
-		return newObj
-	})
+			"SDR Owner": contact["Account"]["SDR_Owner__c"],
+			email: contact["Email"],
+			variables: {
+				"SFDC Account: Account Name": contact["Account"]["Name"],
+				"First Name": contact["FirstName"],
+			},
+		};
+		return newObj;
+	});
 
 	for (const key in SDR_OWNERS) {
-		const recipients = formatted_contacts.filter(contact => contact['SDR Owner'] === key)
-			.map(contact => {
-				delete contact['SDR Owner']
-				return contact
-			})
+		const recipients = formatted_contacts
+			.filter((contact) => contact["SDR Owner"] === key)
+			.map((contact) => {
+				delete contact["SDR Owner"];
+				return contact;
+			});
 		if (recipients.length > 0 && recipients.length <= 50) {
 			// console.log(`${key}: ${recipients.length}`)
-			addUserToMixmax(recipients, SDR_OWNERS[key][0], key)
-		}
-		else if (recipients.length > 100 && SDR_OWNERS[key][1]) {
+			// addUserToMixmax(recipients, SDR_OWNERS[key][0], key)
+		} else if (recipients.length > 100 && SDR_OWNERS[key][1]) {
 			// console.log(`${key}: ${recipients.length}`)
-			addUserToMixmax(recipients.slice(0, 50), SDR_OWNERS[key][0], key)
-			addUserToMixmax(recipients.slice(50, 100), SDR_OWNERS[key][1], key)
-		}
-		else if (recipients.length > 50 && SDR_OWNERS[key][1]) {
+			// addUserToMixmax(recipients.slice(0, 50), SDR_OWNERS[key][0], key)
+			// addUserToMixmax(recipients.slice(50, 100), SDR_OWNERS[key][1], key)
+		} else if (recipients.length > 50 && SDR_OWNERS[key][1]) {
 			// console.log(`${key}: ${recipients.length}`)
-			addUserToMixmax(recipients.slice(0, 50), SDR_OWNERS[key][0], key)
-			addUserToMixmax(recipients.slice(50), SDR_OWNERS[key][1], key)
-		}
-		else if (recipients.length > 50) {
+			// addUserToMixmax(recipients.slice(0, 50), SDR_OWNERS[key][0], key)
+			// addUserToMixmax(recipients.slice(50), SDR_OWNERS[key][1], key)
+		} else if (recipients.length > 50) {
 			// console.log(`${key}: ${recipients.length}`)
-			addUserToMixmax(recipients.slice(0, 50), SDR_OWNERS[key][0], key)
+			// addUserToMixmax(recipients.slice(0, 50), SDR_OWNERS[key][0], key)
 		}
 	}
 }
 
 async function addUserToMixmax(recipients, API, key) {
 	const api = new MixmaxAPI(API);
-	const sequenceId = '6201c6e51fe985075676ae95';
+	const sequenceId = "6201c6e51fe985075676ae95";
 	const sequence = api.sequences.sequence(sequenceId);
 	const res = await sequence.addRecipients(recipients);
-	const successes = res.filter(recipient => recipient.status === 'success')
-	console.log(`${key}: ${successes.length} sent successfully, ${recipients.length - successes.length} failed`)
+	const successes = res.filter((recipient) => recipient.status === "success");
+	console.log(
+		`${key}: ${successes.length} sent successfully, ${
+			recipients.length - successes.length
+		} failed`
+	);
 }
