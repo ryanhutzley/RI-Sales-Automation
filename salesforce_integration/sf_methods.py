@@ -62,10 +62,10 @@ def upsertFormattedContacts(has_email, data, sf):
     data.pop(0)
     if has_email: 
         formatted_data_email = [[row[1].strip(), row[6].strip(), row[12].strip(), row[13].strip(), row[15].strip(), row[14].strip(), row[16].strip()] for row in data]
-        upsertContacts(sf, formatted_data_email)
+        upsertContacts(formatted_data_email, sf)
     else:
         formatted_data_no_email = [[row[1].strip(), row[6].strip(), row[12].strip(), row[13].strip(), row[15].strip(), row[14].strip()] for row in data]
-        upsertContacts(sf, formatted_data_no_email)
+        upsertContacts(formatted_data_no_email, sf)
 
 
 def linkedinUpdate(is_contact, data, sf):
