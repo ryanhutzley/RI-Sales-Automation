@@ -86,10 +86,10 @@ upsertFormattedContacts(True, all_inds_email, sf)
 print('Done with all_inds_email upserts')
 
 upsertFormattedContacts(False, new_nlp_no_email, sf)
-print('Done with all_inds_no_email upserts')
+print('Done with new_nlp_no_email upserts')
 
 upsertFormattedContacts(True, new_nlp_email, sf)
-print('Done with all_inds_email upserts')
+print('Done with new_nlp_email upserts')
 
 updateContacts(bounced_given_contacts, sf)
 print('Done with bounced_given_contacts updates')
