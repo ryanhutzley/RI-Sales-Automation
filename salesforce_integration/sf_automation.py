@@ -4,7 +4,7 @@ from google.oauth2 import service_account
 from dotenv import load_dotenv
 import os
 
-from sf_methods import upsertContacts, updateContacts, upsertFormattedContacts, linkedinUpdate, updateAccountTags
+from sf_methods import upsertContacts, updateContacts, upsertFormattedContacts, linkedinUpdate, updateAccountTags, updateContactTags
 
 load_dotenv("../.env")
 
@@ -32,6 +32,7 @@ ALL_INDUSTRIES_DATABEES = '1JrWhimitcDUro-N1nqiU8ZrIsxzyiWP2kOgQegdQW9w'
 NO_LINKEDIN = '1HhrwsJggJr65PqYcjTw5GmW_3NfmCeVXX03sk2SilKM'
 BOUNCED_EMAILS_MERGE = '1WJD0vJWokExILrHILdVVzxTyoVjGgXSo-2XERIMURvw'
 NEW_NLP_DATABEES_MERGE = '13owKMVnEIzS5rXKPG8xfqcxKm9C08a4Gumpn5fcDyCc'
+CONTACT_TAGS = '11roMxtJJpZkpYRs5d1TrwI8tuuNdI6OgZcQSTB7xN2Q'
 
 service = build('sheets', 'v4', credentials=creds)
 
@@ -69,6 +70,10 @@ underworked_account_tags = sheet.values().get(spreadsheetId=UNDERWORKED_DATABEES
 
 new_nlp_account_tags = sheet.values().get(spreadsheetId=NEW_NLP_DATABEES_MERGE, range='Matched Accounts - To Update!K:M').execute().get('values', [])
 
+################# CONTACT TAGS UPDATES ####################
+
+contact_tags = sheet.values().get(spreadsheetId=CONTACT_TAGS, range='Load Sheet!A:C').execute().get('values', [])
+
 #
 # FUNCTION INVOCATIONS 
 #
@@ -105,3 +110,6 @@ print('Done with underworked account tag updates')
 
 updateAccountTags(new_nlp_account_tags, sf)
 print('Done with new nlp account tag updates')
+
+updateContactTags(contact_tags, sf)
+print('Done with contact tag updates')
