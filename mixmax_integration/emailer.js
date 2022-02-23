@@ -6,11 +6,23 @@ const jsforce = require("jsforce");
 SENIORITY_LEVEL = {};
 
 SDR_OWNERS = {
-	"Ellen Scott-Young": [process.env.ELLEN_YARONSINGER_API],
-	"Katherine Hess": [process.env.KAT_YARON_S_API],
-	"Sophia Serseri": [process.env.SOPHIA_YSINGER_API],
-	"Ryan Hutzley": [process.env.RYAN_YARON_DASH_SINGER_API],
-	"Mark Levinson": [process.env.MARK_YARON_SINGER_API],
+	"Ellen Scott-Young": [
+		process.env.ELLEN_YARONSINGER_API,
+		process.env.ELLEN_YARONS_API,
+	],
+	"Katherine Hess": [process.env.KAT_YARON_S_API, process.env.KAT_YS_API],
+	"Sophia Serseri": [
+		process.env.SOPHIA_YSINGER_API,
+		process.env.SOPHIA_Y_DASH_SINGER_API,
+	],
+	"Ryan Hutzley": [
+		process.env.RYAN_YARON_DASH_SINGER_API,
+		process.env.RYAN_YSING_API,
+	],
+	"Mark Levinson": [
+		process.env.MARK_YARON_SINGER_API,
+		process.env.MARK_Y_SINGER_API,
+	],
 };
 
 const contacts = [];
@@ -29,14 +41,21 @@ conn.login(
         FROM CONTACT
         WHERE LastActivityDate != LAST_N_DAYS:60
         AND (EMAIL != null)
-        AND (NOT Title LIKE '%vp%')
-        AND (NOT Title LIKE 'CTO')
-        AND (NOT Title LIKE '%CEO%')
-        AND (NOT Title LIKE '%CPO%')
-        AND (NOT Title LIKE '%CDO%')
-        AND (NOT Title LIKE '%chief%')
-        AND (NOT Title LIKE '%vice president%')
+        AND (
+            Job_Function__c = 'Data'
+            OR Job_Function__c = 'AI'
+            OR Job_Function__c = 'ML'
+            OR Job_Function__c = 'Data Science'
+            OR Job_Function__c = 'Engineering'
+        )
+        AND (
+            Management_Level__c = 'Director'
+            OR Management_Level__c = 'Manager'
+            OR Management_Level__c = 'Non-Manager'
+        )
+        AND Contact_Status__c != 'Do Not Contact'
         AND AccountId != null
+        AND Account.Priority_Account__c = FALSE
         AND Account.SDR_Owner__c != null
         AND Account.Account_Status__c
         NOT IN ('Bad Fit', 'Competitor', 'Active Opportunity', 'Closed Lost Opportunity', 'MLOps Company', 'Customer')
@@ -64,7 +83,7 @@ function getMore(nextRecordsUrl) {
 		if (!res.done) {
 			getMore(res.nextRecordsUrl);
 		} else if (res.done) {
-			// sortAndSend(contacts)
+			sortAndSend(contacts);
 		}
 	});
 }
@@ -89,20 +108,20 @@ function sortAndSend(contacts) {
 				delete contact["SDR Owner"];
 				return contact;
 			});
-		if (recipients.length > 0 && recipients.length <= 50) {
-			// console.log(`${key}: ${recipients.length}`)
-			// addUserToMixmax(recipients, SDR_OWNERS[key][0], key)
-		} else if (recipients.length > 100 && SDR_OWNERS[key][1]) {
-			// console.log(`${key}: ${recipients.length}`)
-			// addUserToMixmax(recipients.slice(0, 50), SDR_OWNERS[key][0], key)
-			// addUserToMixmax(recipients.slice(50, 100), SDR_OWNERS[key][1], key)
-		} else if (recipients.length > 50 && SDR_OWNERS[key][1]) {
-			// console.log(`${key}: ${recipients.length}`)
-			// addUserToMixmax(recipients.slice(0, 50), SDR_OWNERS[key][0], key)
-			// addUserToMixmax(recipients.slice(50), SDR_OWNERS[key][1], key)
-		} else if (recipients.length > 50) {
-			// console.log(`${key}: ${recipients.length}`)
-			// addUserToMixmax(recipients.slice(0, 50), SDR_OWNERS[key][0], key)
+		if (recipients.length > 0 && recipients.length <= 45) {
+			// console.log(`${key}: ${recipients.length}`);
+			addUserToMixmax(recipients, SDR_OWNERS[key][0], key);
+		} else if (recipients.length > 90 && SDR_OWNERS[key][1]) {
+			// console.log(`${key}: ${recipients.length}`);
+			addUserToMixmax(recipients.slice(0, 45), SDR_OWNERS[key][0], key);
+			addUserToMixmax(recipients.slice(45, 90), SDR_OWNERS[key][1], key);
+		} else if (recipients.length > 45 && SDR_OWNERS[key][1]) {
+			// console.log(`${key}: ${recipients.length}`);
+			addUserToMixmax(recipients.slice(0, 45), SDR_OWNERS[key][0], key);
+			addUserToMixmax(recipients.slice(45), SDR_OWNERS[key][1], key);
+		} else if (recipients.length > 45) {
+			// console.log(`${key}: ${recipients.length}`);
+			addUserToMixmax(recipients.slice(0, 45), SDR_OWNERS[key][0], key);
 		}
 	}
 }
