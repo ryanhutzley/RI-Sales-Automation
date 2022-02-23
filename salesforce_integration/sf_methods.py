@@ -55,6 +55,13 @@ def updateContacts(contacts, sf):
     contacts.pop(0)
     formatted_contact_info = [{'Id': row[0], 'FirstName': row[1], 'LastName': row[2], 'Email': row[3], 'Title': row[5], 'Contact_LinkedIn_URL__c': row[6]} for row in contacts]
     sf.bulk.Contact.update(formatted_contact_info, batch_size=10000, use_serial=False)
+    
+
+def updateContactTags(contacts, sf):
+
+    contacts.pop(0)
+    formatted_contact_info = [{'Id': row[0], 'Job_Function__c': row[1], 'Management_Level__c': row[2]} for row in contacts]
+    sf.bulk.Contact.update(formatted_contact_info, batch_size=10000, use_serial=False)
 
 
 def upsertFormattedContacts(has_email, data, sf):
