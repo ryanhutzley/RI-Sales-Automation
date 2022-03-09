@@ -24,6 +24,7 @@
   "dependencies": {
     "dotenv": "^16.0.0",
     "jsforce": "^1.11.0",
-    "mixmax-api": "^1.5.0"
+    "mixmax-api": "^1.5.0",
+    "readline-sync": "^1.4.10"
   }
 }

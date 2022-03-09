@@ -2,6 +2,22 @@ const path = require("path").resolve(__dirname + "/..");
 require("dotenv").config({ path: path + "/.env" });
 const MixmaxAPI = require("mixmax-api");
 const jsforce = require("jsforce");
+const readlineSync = require("readline-sync");
+
+START_TIME = "06:00:00";
+END_TIME = "10:00:00";
+
+const currentDate = new Date();
+
+startDate = new Date(currentDate.getTime());
+startDate.setHours(START_TIME.split(":")[0]);
+startDate.setMinutes(START_TIME.split(":")[1]);
+startDate.setSeconds(START_TIME.split(":")[2]);
+
+endDate = new Date(currentDate.getTime());
+endDate.setHours(END_TIME.split(":")[0]);
+endDate.setMinutes(END_TIME.split(":")[1]);
+endDate.setSeconds(END_TIME.split(":")[2]);
 
 SENIORITY_LEVEL = {};
 
@@ -37,7 +53,7 @@ conn.login(
 		}
 		conn.query(
 			`
-        SELECT FirstName, Email, Account.Name, Account.SDR_Owner__c, Title
+        SELECT FirstName, Email, Account.Name, Account.SDR_Owner__c, Title, Account.Account_Score_Tier__c
         FROM CONTACT
         WHERE LastActivityDate != LAST_N_DAYS:60
         AND (EMAIL != null)
@@ -45,6 +61,8 @@ conn.login(
             Job_Function__c = 'Data'
             OR Job_Function__c = 'AI'
             OR Job_Function__c = 'ML'
+            OR Job_Function__c = 'Artificial Intelligence'
+            OR Job_Function__c = 'Machine Learning'
             OR Job_Function__c = 'Data Science'
             OR Job_Function__c = 'Engineering'
         )
@@ -53,7 +71,10 @@ conn.login(
             OR Management_Level__c = 'Manager'
             OR Management_Level__c = 'Non-Manager'
         )
-        AND Contact_Status__c != 'Do Not Contact'
+        AND (
+            Contact_Status__c != 'Do Not Contact'
+            OR Contact_Status__c != 'Responded - Circle Back'
+        )
         AND AccountId != null
         AND Account.Priority_Account__c = FALSE
         AND Account.SDR_Owner__c != null
@@ -68,6 +89,8 @@ conn.login(
 				contacts.push(...res.records);
 				if (!res.done) {
 					getMore(res.nextRecordsUrl);
+				} else {
+					sortAndSend(contacts);
 				}
 			}
 		);
@@ -82,13 +105,45 @@ function getMore(nextRecordsUrl) {
 		contacts.push(...res.records);
 		if (!res.done) {
 			getMore(res.nextRecordsUrl);
-		} else if (res.done) {
+		} else {
 			sortAndSend(contacts);
 		}
 	});
 }
 
 function sortAndSend(contacts) {
+	while (true) {
+		const res = readlineSync.question(
+			`You are about to send emails. Do you wish to proceed? `
+		);
+		let regexYes = /y(?:es)?/i;
+		let regexNo = /n(?:o)?/i;
+		if (res.match(regexYes)) {
+			break;
+		} else if (res.match(regexNo)) {
+			console.log("Process canceled");
+			return;
+		} else {
+			console.log("Must be y/n");
+		}
+	}
+
+	contacts.sort(function (a, b) {
+		let newA = parseInt(a["Account"]["Account_Score_Tier__c"]?.slice(-1));
+		let newB = parseInt(b["Account"]["Account_Score_Tier__c"]?.slice(-1));
+
+		if (!isFinite(newA) && !isFinite(newB)) {
+			return 0;
+		}
+		if (!isFinite(newA)) {
+			return 1;
+		}
+		if (!isFinite(newB)) {
+			return -1;
+		}
+		return newA - newB;
+	});
+
 	let formatted_contacts = contacts.map((contact) => {
 		const newObj = {
 			"SDR Owner": contact["Account"]["SDR_Owner__c"],
@@ -102,12 +157,15 @@ function sortAndSend(contacts) {
 	});
 
 	for (const key in SDR_OWNERS) {
-		const recipients = formatted_contacts
-			.filter((contact) => contact["SDR Owner"] === key)
-			.map((contact) => {
-				delete contact["SDR Owner"];
-				return contact;
-			});
+		const recipients = formatted_contacts.filter(
+			(contact) => contact["SDR Owner"] === key
+		);
+
+		recipients.forEach((contact) => {
+			delete contact["SDR Owner"];
+			return contact;
+		});
+
 		if (recipients.length > 0 && recipients.length <= 45) {
 			// console.log(`${key}: ${recipients.length}`);
 			addUserToMixmax(recipients, SDR_OWNERS[key][0], key);
@@ -132,9 +190,12 @@ async function addUserToMixmax(recipients, API, key) {
 	const sequence = api.sequences.sequence(sequenceId);
 	const res = await sequence.addRecipients(recipients);
 	const successes = res.filter((recipient) => recipient.status === "success");
+	const errors = res.filter((recipient) => recipient.status === "error");
+	const duplicates = res.filter(
+		(recipient) => recipient.status === "duplicated"
+	);
+	key === "Katherine Hess" ? console.log(res) : null;
 	console.log(
-		`${key}: ${successes.length} sent successfully, ${
-			recipients.length - successes.length
-		} failed`
+		`${key}: ${successes.length} successes, ${errors.length} errors, ${duplicates.length} duplicates`
 	);
 }
