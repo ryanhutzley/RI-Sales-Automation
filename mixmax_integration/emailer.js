@@ -44,74 +44,46 @@ SDR_OWNERS = {
 const contacts = [];
 
 const conn = new jsforce.Connection();
-conn.login(
-	process.env.USERNAME,
-	process.env.PASSWORD + process.env.TOKEN,
-	function (err, res) {
-		if (err) {
-			return console.error(err);
-		}
-		conn.query(
-			`
-        SELECT FirstName, Email, Account.Name, Account.SDR_Owner__c, Title, Account.Account_Score_Tier__c
-        FROM CONTACT
-        WHERE LastActivityDate != LAST_N_DAYS:60
-        AND (EMAIL != null)
-        AND (
-            Job_Function__c = 'Data'
-            OR Job_Function__c = 'AI'
-            OR Job_Function__c = 'ML'
-            OR Job_Function__c = 'Artificial Intelligence'
-            OR Job_Function__c = 'Machine Learning'
-            OR Job_Function__c = 'Data Science'
-            OR Job_Function__c = 'Engineering'
-        )
-        AND (
-            Management_Level__c = 'Director'
-            OR Management_Level__c = 'Manager'
-            OR Management_Level__c = 'Non-Manager'
-        )
-        AND (
-            Contact_Status__c != 'Do Not Contact'
-            OR Contact_Status__c != 'Responded - Circle Back'
-        )
-        AND AccountId != null
-        AND Account.Priority_Account__c = FALSE
-        AND Account.SDR_Owner__c != null
-        AND Account.Account_Status__c
-        NOT IN ('Bad Fit', 'Competitor', 'Active Opportunity', 'Closed Lost Opportunity', 'MLOps Company', 'Customer')
-        `,
-			function (err, res) {
+
+module.exports = function sendEmails(query, emailsPerAccount) {
+	conn.login(
+		process.env.USERNAME,
+		process.env.PASSWORD + process.env.TOKEN,
+		function (err, res) {
+			if (err) {
+				return console.error(err);
+			}
+			conn.query(query, function (err, res) {
 				if (err) {
 					return console.error(err);
 				}
 				console.log(res.totalSize);
 				contacts.push(...res.records);
 				if (!res.done) {
-					getMore(res.nextRecordsUrl);
+					getMore(res.nextRecordsUrl, emailsPerAccount);
 				} else {
-					sortAndSend(contacts);
+					sortAndSend(contacts, emailsPerAccount);
 				}
-			}
-		);
-	}
-);
+			});
+		}
+	);
+};
 
-function getMore(nextRecordsUrl) {
+function getMore(nextRecordsUrl, emailsPerAccount) {
 	conn.queryMore(nextRecordsUrl, function (err, res) {
 		if (err) {
 			return console.error(err);
 		}
 		contacts.push(...res.records);
 		if (!res.done) {
-			getMore(res.nextRecordsUrl);
+			getMore(res.nextRecordsUrl, emailsPerAccount);
 		} else {
-			sortAndSend(contacts);
+			sortAndSend(contacts, emailsPerAccount);
 		}
 	});
 }
 
-function sortAndSend(contacts) {
+function sortAndSend(contacts, emailsPerAccount) {
 	while (true) {
 		const res = readlineSync.question(
 			`You are about to send emails. Do you wish to proceed? `
@@ -156,6 +128,14 @@ function sortAndSend(contacts) {
 		return newObj;
 	});
 
+	const minEmails = emailsPerAccount;
+	const maxEmails = emailsPerAccount * 2;
+	const isLowLevel = minEmails < 45;
+
+	isLowLevel
+		? console.log("Starting low level outreach...")
+		: console.log("Starting high level outreach...");
+
 	for (const key in SDR_OWNERS) {
 		const recipients = formatted_contacts.filter(
 			(contact) => contact["SDR Owner"] === key
@@ -166,22 +146,26 @@ function sortAndSend(contacts) {
 			return contact;
 		});
 
-		if (recipients.length > 0 && recipients.length <= 45) {
-			// console.log(`${key}: ${recipients.length}`);
-			addUserToMixmax(recipients, SDR_OWNERS[key][0], key);
-		} else if (recipients.length > 90 && SDR_OWNERS[key][1]) {
-			// console.log(`${key}: ${recipients.length}`);
-			addUserToMixmax(recipients.slice(0, 45), SDR_OWNERS[key][0], key);
-			addUserToMixmax(recipients.slice(45, 90), SDR_OWNERS[key][1], key);
-		} else if (recipients.length > 45 && SDR_OWNERS[key][1]) {
-			// console.log(`${key}: ${recipients.length}`);
-			addUserToMixmax(recipients.slice(0, 45), SDR_OWNERS[key][0], key);
-			addUserToMixmax(recipients.slice(45), SDR_OWNERS[key][1], key);
-		} else if (recipients.length > 45) {
-			// console.log(`${key}: ${recipients.length}`);
-			addUserToMixmax(recipients.slice(0, 45), SDR_OWNERS[key][0], key);
+		if (recipients.length > 0 && recipients.length <= minEmails) {
+			console.log(`${key}: ${recipients.length}`);
+			// addUserToMixmax(recipients, SDR_OWNERS[key][0], key);
+		} else if (recipients.length > maxEmails && SDR_OWNERS[key][1]) {
+			console.log(`${key}: ${recipients.length}`);
+			// addUserToMixmax(recipients.slice(0, minEmails), SDR_OWNERS[key][0], key);
+			// addUserToMixmax(recipients.slice(minEmails, maxEmails), SDR_OWNERS[key][1], key);
+		} else if (recipients.length > minEmails && SDR_OWNERS[key][1]) {
+			console.log(`${key}: ${recipients.length}`);
+			// addUserToMixmax(recipients.slice(0, minEmails), SDR_OWNERS[key][0], key);
+			// addUserToMixmax(recipients.slice(minEmails), SDR_OWNERS[key][1], key);
+		} else if (recipients.length > minEmails) {
+			console.log(`${key}: ${recipients.length}`);
+			// addUserToMixmax(recipients.slice(0, minEmails), SDR_OWNERS[key][0], key);
 		}
 	}
+
+	isLowLevel
+		? console.log("Done with low level outreach...")
+		: console.log("Done with high level outreach...");
 }
 
 async function addUserToMixmax(recipients, API, key) {
