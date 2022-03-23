@@ -67,7 +67,7 @@ const queries = {
 
 async function send() {
 	const lowerLevel = await emailer(queries.lowLevelBot, 45);
-	// const higherUps = await emailer(queries.higherUps, 9);
+	const higherUps = await emailer(queries.higherUps, 9);
 }
 
 send();

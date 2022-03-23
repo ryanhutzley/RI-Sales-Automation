@@ -97,7 +97,7 @@ module.exports = async function sendEmails(queries, emailsPerAccount) {
 		});
 
 		if (recipients.length === 0) {
-			console.log(`${key}: NO MORE CONTACTS`);
+			// console.log(`${key}: NO MORE CONTACTS`);
 		} else if (recipients.length > 0 && recipients.length <= minEmails) {
 			// console.log(`${key}: ${recipients.length}`);
 			await addUserToMixmax(recipients, SDR_OWNERS[key][0], key);
@@ -134,6 +134,3 @@ async function addUserToMixmax(recipients, API, key) {
 		`${key}: ${successes.length} successes, ${errors.length} errors, ${duplicates.length} duplicates`
 	);
 }
-
-// sendEmails(queries.lowLevelBot, 45);
-// sendEmails(queries.higherUps, 9);
