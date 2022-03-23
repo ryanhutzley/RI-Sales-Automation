@@ -130,7 +130,7 @@ except IndexError as e:
 
 try:
     updateContacts(bounced_given_contacts, sf)
-    redirected('bounced_given_contacts: SUCCESS')
+    redirected('bounced_given_contacts: SUCCESS', path)
 except IndexError as e:
     redirected('bounced_given_contacts: FAILED', path)
 
