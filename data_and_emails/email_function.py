@@ -1,20 +1,19 @@
 import requests
 
-SEQ_ID = "6201c6e51fe985075676ae95"
+SEQUENCES = ["6201c6e51fe985075676ae95", "6234ee26694544d77314b991"]
 
-def getAndSend(sf, queries, sdrs):
-    is_low_level = True
 
-    email_results = []
+def getAndSend(sf, queries, sdrs, writer):
 
-    for query in queries:
-        if is_low_level:
-            email_results.append(['Low Level Outreach', '', '', ''])
-            email_results.append(['SDR', 'Successes', 'Errors', 'Duplicates'])
-        else:
-            email_results.append(['', '', '', ''])
-            email_results.append(['High Level Outreach', '', '', ''])
-            email_results.append(['SDR','Successes', 'Errors', 'Duplicates'])
+    seq_id = SEQUENCES[0]
+
+    for count, query in enumerate(queries):
+
+        if count == 2:
+            seq_id = SEQUENCES[1]
+        
+        writer.writerow([query["title"]])
+        writer.writerow(["SDR + Account", "Successes", "Errors", "Duplicates"])
 
         contacts = []
 
@@ -53,11 +52,13 @@ def getAndSend(sf, queries, sdrs):
             }
 
         formatted_contacts = list(map(formatContacts, contacts))
+        original_format_contacts = formatted_contacts[:]
 
         min_emails = query["limit"]
         max_emails = min_emails * 2
 
         for sdr,tokens in sdrs.items():
+
             recipients = []
 
             for count, contact in enumerate(formatted_contacts):
@@ -67,37 +68,29 @@ def getAndSend(sf, queries, sdrs):
                     recipients.append(contact)
 
             if len(recipients) == 0:
-                email_results.append([sdr, 0, 0, 0])
+                writer.writerow([sdr, 0, 0, 0])
                 continue
 
             if len(recipients) <= min_emails:
                 # pass
-                acct_1 = mixmax_send(recipients, sdr, tokens[0])
-                email_results.append(acct_1)
+                mixmax_send(seq_id, recipients, sdr, tokens[0][0], tokens[0][1], original_format_contacts, writer)
             elif len(recipients) > max_emails and len(tokens) > 1:
                 # pass
-                acct_1 = mixmax_send(recipients[0:min_emails], sdr, tokens[0])
-                acct_2 = mixmax_send(recipients[min_emails:max_emails], sdr, tokens[1])
-                total = condense(acct_1, acct_2, sdr)
-                email_results.append(total)
+                mixmax_send(seq_id, recipients[0:min_emails], sdr, tokens[0][0], tokens[0][1], original_format_contacts, writer)
+                mixmax_send(seq_id, recipients[min_emails:max_emails], sdr, tokens[1][0], tokens[1][1], original_format_contacts, writer)
             elif len(recipients) > min_emails and len(tokens) > 1:
                 # pass
-                acct_1 = mixmax_send(recipients[0:min_emails], sdr, tokens[0])
-                acct_2 = mixmax_send(recipients[min_emails:], sdr, tokens[1])
-                total = condense(acct_1, acct_2, sdr)
-                email_results.append(total)
+                mixmax_send(seq_id, recipients[0:min_emails], sdr, tokens[0][0], tokens[0][1], original_format_contacts, writer)
+                mixmax_send(seq_id, recipients[min_emails:], sdr, tokens[1][0], tokens[1][1], original_format_contacts, writer)
             else:
                 # pass
-                acct_1 = mixmax_send(sdr, tokens[0])
-                email_results.append(acct_1)
+                mixmax_send(seq_id, recipients[0:min_emails], sdr, tokens[0][0], tokens[0][1], original_format_contacts, writer)
 
-        is_low_level = False
-
-    return email_results
+        writer.writerow([''])
 
 
-def mixmax_send(recipients, sdr, token):
-    url = f"https://api.mixmax.com/v1/sequences/{SEQ_ID}/recipients/"
+def mixmax_send(seq_id, recipients, sdr, token, account, original_format_contacts, writer):
+    url = f"https://api.mixmax.com/v1/sequences/{seq_id}/recipients/"
 
     payload = {
         "recipients": recipients,
@@ -112,13 +105,24 @@ def mixmax_send(recipients, sdr, token):
     res_data = res.json()
     successes = len(list(filter(lambda r:r["status"] == "success", res_data["recipients"])))
     errors = len(list(filter(lambda r:r["status"] == "error", res_data["recipients"])))
-    duplicates = len(list(filter(lambda r:r["status"] == "duplicated", res_data["recipients"])))
+    duplicates = list(filter(lambda r:r["status"] == "duplicated", res_data["recipients"]))
 
-    return [sdr, successes, errors, duplicates]
+    print(f'{sdr}: {successes}')
 
+    writer.writerow([f'{sdr}: {account}', successes, errors, len(duplicates)])
+    
+    if len(duplicates) > 0:
+        writer.writerow(["Duplicated Contacts"])
+        writer.writerow(["Email", "SFDC Account: Account Name", "First Name"])
+        dupes = getDupes(duplicates, original_format_contacts)
+        writer.writerows(dupes)
+    
 
-def condense(acct_1, acct_2, sdr):
-    zipped_sends = list(zip(acct_1, acct_2))
-    sum = list(map(lambda r:r[0] + r[1], zipped_sends[1:]))
-    sum.insert(0, sdr)
-    return sum
+def getDupes(duplicates, original_format_contacts):
+    dupes = []
+    for d in duplicates:
+        for c in original_format_contacts:
+            if c["email"] == d["email"]:
+                dupes.append([c["email"], c["variables"]["SFDC Account: Account Name"], c["variables"]["First Name"]])
+                break
+    return dupes

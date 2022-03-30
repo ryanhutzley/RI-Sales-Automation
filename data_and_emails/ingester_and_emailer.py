@@ -25,11 +25,26 @@ SF_TOKEN = os.environ.get("TOKEN")
 sf = Salesforce(username=SF_USERNAME, password=SF_PASSWORD, security_token=SF_TOKEN)
 
 SDR_OWNERS = {
-	"Ellen Scott-Young": [os.environ.get("ELLEN_YARONSINGER_API"), os.environ.get("ELLEN_YARONS_API")],
-	"Katherine Hess": [os.environ.get("KAT_YARON_S_API"), os.environ.get("KAT_YS_API")],
-	"Sophia Serseri": [os.environ.get("SOPHIA_YSINGER_API"), os.environ.get("SOPHIA_Y_DASH_SINGER_API")],
-	"Ryan Hutzley": [os.environ.get("RYAN_YARON_DASH_SINGER_API"), os.environ.get("RYAN_YSING_API")],
-	"Mark Levinson": [os.environ.get("MARK_YARON_SINGER_API"), os.environ.get("MARK_Y_SINGER_API")],
+	"Ellen Scott-Young": [
+        (os.environ.get("ELLEN_YARONSINGER_API"), 'yaronsinger'), 
+        (os.environ.get("ELLEN_YARONS_API"), 'yarons')
+    ],
+	"Katherine Hess": [
+        (os.environ.get("KAT_YARON_S_API"), 'yaron_s'),
+        (os.environ.get("KAT_YS_API"), 'ys')
+    ],
+	"Sophia Serseri": [
+        (os.environ.get("SOPHIA_YSINGER_API"), 'ysinger'), 
+        (os.environ.get("SOPHIA_Y_DASH_SINGER_API"), 'y-singer')
+    ],
+	"Ryan Hutzley": [
+        (os.environ.get("RYAN_YARON_DASH_SINGER_API"), 'yaron-singer'), 
+        (os.environ.get("RYAN_YSING_API"), 'ysing')
+    ],
+	"Mark Levinson": [
+        (os.environ.get("MARK_YARON_SINGER_API"), 'yaron_singer'),
+        (os.environ.get("MARK_Y_SINGER_API"), 'y_singer')
+    ],
 }
 
 SERVICE_ACCOUNT_FILE = '/Users/ryanhutzley/Desktop/RI Sales Automation/data_and_emails/keys.json'
@@ -75,80 +90,72 @@ company_linkedinURLs = sheet.values().get(spreadsheetId=NO_LINKEDIN, range='Acco
 
 contact_linkedinURLs = sheet.values().get(spreadsheetId=NO_LINKEDIN, range='Contacts: Contact LinkedIn URL!A:C').execute().get('values', [])
 
-################# ACCOUNT TAGS UPDATES ####################
-
-underworked_account_tags = sheet.values().get(spreadsheetId=UNDERWORKED_DATABEES, range='Accounts to Update!A:C').execute().get('values', [])
-
-
 ################# CONTACT TAGS UPDATES ####################
 
 contact_tags = sheet.values().get(spreadsheetId=CONTACT_TAGS, range='Load Sheet!A:C').execute().get('values', [])
 
 
-def redirected(text, path):
-    with open(path, 'a') as out:
-        with redirect_stdout(out):
-            print(text)
-
-path = f'/Users/ryanhutzley/Desktop/RI Sales Automation/logs/data_log_{current_date}.txt'
-
-try:
-    upsertContacts(underworked_no_email, sf)
-    redirected('underworked_no_email:   SUCCESS', path)
-except IndexError as e:
-    redirected('underworked_no_email:   FAILED', path)
-
-try:
-    upsertContacts(underworked_email, sf)
-    redirected('underworked_email:      SUCCESS', path)
-except IndexError as e:
-    redirected('underworked_email:      FAILED', path)
-
-try:
-    upsertFormattedContacts(False, all_inds_no_email, sf)
-    redirected('all_inds_no_email:      SUCCESS', path)
-except IndexError as e:
-    redirected('all_inds_no_email:      FAILED', path)
-
-try:
-    upsertFormattedContacts(True, all_inds_email, sf)
-    redirected('all_inds_email:         SUCCESS', path)
-except IndexError as e:
-    redirected('all_inds_email:         FAILED', path)
-
-try:
-    linkedinUpdate(False, company_linkedinURLs, sf)
-    redirected('company_linkedinURLs:   SUCCESS', path)
-except IndexError as e:
-    redirected('company_linkedinURLs:   FAILED', path)
-
-try:
-    linkedinUpdate(True, contact_linkedinURLs, sf)
-    redirected('contact_linkedinURLs:   SUCCESS', path)
-except IndexError as e:
-    redirected('contact_linkedinURLs:   FAILED', path)
-
-try:
-    updateContacts(bounced_given_contacts, sf)
-    redirected('bounced_given_contacts: SUCCESS', path)
-except IndexError as e:
-    redirected('bounced_given_contacts: FAILED', path)
-
-try:
-    updateContactTags(contact_tags, sf)
-    redirected('contact tags:           SUCCESS', path)
-except IndexError as e:
-    redirected('contact_tags:           FAILED', path)
-
-# 
-# EMAIL OUTREACH
-# 
-
-email_data = getAndSend(sf, queries, SDR_OWNERS)
-
-with open(f'/Users/ryanhutzley/Desktop/RI Sales Automation/logs/email_log_{current_date}.csv', 'w', newline='') as file:
+with open(f'/Users/ryanhutzley/Desktop/RI Sales Automation/logs/log_{current_date}.csv', 'w', newline='') as file:
     writer = csv.writer(file)
-    writer.writerows(email_data)
+    writer.writerow(["Data Ingestion"])
+    writer.writerow(["Data Title", "Status"])
+
+    try:
+        upsertContacts(underworked_no_email, sf)
+        writer.writerow(['underworked_no_emai', 'SUCCESS'])
+    except IndexError as e:
+        writer.writerow(['underworked_no_emai', 'FAILED'])
+
+    try:
+        upsertContacts(underworked_email, sf)
+        writer.writerow(['underworked_email', 'SUCCESS'])
+    except IndexError as e:
+        writer.writerow(['underworked_email', 'FAILED'])
+
+    try:
+        upsertFormattedContacts(False, all_inds_no_email, sf)
+        writer.writerow(['all_inds_no_email', 'SUCCESS'])
+    except IndexError as e:
+        writer.writerow(['all_inds_no_email', 'FAILED'])
+
+    try:
+        upsertFormattedContacts(True, all_inds_email, sf)
+        writer.writerow(['all_inds_email', 'SUCCESS'])
+    except IndexError as e:
+        writer.writerow(['all_inds_email', 'FAILED'])
+
+    try:
+        linkedinUpdate(False, company_linkedinURLs, sf)
+        writer.writerow(['company_linkedinURL', 'SUCCESS'])
+    except IndexError as e:
+        writer.writerow(['company_linkedinURL', 'FAILED'])
+
+    try:
+        linkedinUpdate(True, contact_linkedinURLs, sf)
+        writer.writerow(['contact_linkedinURL', 'SUCCESS'])
+    except IndexError as e:
+        writer.writerow(['contact_linkedinURL', 'FAILED'])
+
+    try:
+        updateContacts(bounced_given_contacts, sf)
+        writer.writerow(['bounced_given_contacts', 'SUCCESS'])
+    except IndexError as e:
+        writer.writerow(['bounced_given_contacts', 'FAILED'])
+
+    try:
+        updateContactTags(contact_tags, sf)
+        writer.writerow(['contact tags', 'SUCCESS'])
+    except IndexError as e:
+        writer.writerow(['contact_tags', 'FAILED'])
+
+    writer.writerow([''])
+
+    # 
+    # EMAIL OUTREACH
+    # 
+
+    writer.writerow(["Email Outreach"])
+    email_data = getAndSend(sf, queries, SDR_OWNERS, writer)
 
 # 
 # SEND RESULTS VIA EMAIL
