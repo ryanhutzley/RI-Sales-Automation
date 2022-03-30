@@ -82,7 +82,7 @@ module.exports = async function sendEmails(queries, emailsPerAccount) {
 
 	const minEmails = emailsPerAccount;
 	const maxEmails = emailsPerAccount * 2;
-	const isLowLevel = minEmails > 9;
+	const isLowLevel = minEmails > 15;
 
 	isLowLevel
 		? console.log("Starting low level outreach...")
@@ -96,23 +96,25 @@ module.exports = async function sendEmails(queries, emailsPerAccount) {
 			return contact;
 		});
 
+		// if (key === "Ryan Hutzley") {
 		if (recipients.length === 0) {
 			// console.log(`${key}: NO MORE CONTACTS`);
 		} else if (recipients.length > 0 && recipients.length <= minEmails) {
-			// console.log(`${key}: ${recipients.length}`);
-			await addUserToMixmax(recipients, SDR_OWNERS[key][0], key);
+			console.log(`${key}: ${recipients.length}`);
+			// await addUserToMixmax(recipients, SDR_OWNERS[key][0], key);
 		} else if (recipients.length > maxEmails && SDR_OWNERS[key][1]) {
-			// console.log(`${key}: ${recipients.length}`);
-			await addUserToMixmax(recipients.slice(0, minEmails), SDR_OWNERS[key][0], key);
-			await addUserToMixmax(recipients.slice(minEmails, maxEmails), SDR_OWNERS[key][1], key);
+			console.log(`${key}: ${recipients.length}`);
+			// await addUserToMixmax(recipients.slice(0, minEmails), SDR_OWNERS[key][0], key);
+			// await addUserToMixmax(recipients.slice(minEmails, maxEmails), SDR_OWNERS[key][1], key);
 		} else if (recipients.length > minEmails && SDR_OWNERS[key][1]) {
-			// console.log(`${key}: ${recipients.length}`);
-			await addUserToMixmax(recipients.slice(0, minEmails), SDR_OWNERS[key][0], key);
-			await addUserToMixmax(recipients.slice(minEmails), SDR_OWNERS[key][1], key);
+			console.log(`${key}: ${recipients.length}`);
+			// await addUserToMixmax(recipients.slice(0, minEmails), SDR_OWNERS[key][0], key);
+			// await addUserToMixmax(recipients.slice(minEmails), SDR_OWNERS[key][1], key);
 		} else if (recipients.length > minEmails) {
-			// console.log(`${key}: ${recipients.length}`);
-			await addUserToMixmax(recipients.slice(0, minEmails), SDR_OWNERS[key][0], key);
+			console.log(`${key}: ${recipients.length}`);
+			// await addUserToMixmax(recipients.slice(0, minEmails), SDR_OWNERS[key][0], key);
 		}
+		// }
 	}
 
 	isLowLevel
@@ -123,7 +125,7 @@ module.exports = async function sendEmails(queries, emailsPerAccount) {
 async function addUserToMixmax(recipients, API, key) {
 	// console.log(recipients[0]);
 	const api = new MixmaxAPI(API);
-	const sequenceId = "6201c6e51fe985075676ae95";
+	const sequenceId = "61f2ed040915b49be51a23c8";
 	const sequence = api.sequences.sequence(sequenceId);
 	const res = await sequence.addRecipients(recipients);
 	const successes = res.filter((recipient) => recipient.status === "success");
