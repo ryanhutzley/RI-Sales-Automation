@@ -1,0 +1,99 @@
+Data Ingestion
+Data Title,Status
+underworked_no_emai,SUCCESS
+underworked_email,SUCCESS
+all_inds_no_email,SUCCESS
+all_inds_email,SUCCESS
+company_linkedinURL,SUCCESS
+contact_linkedinURL,SUCCESS
+bounced_given_contacts,SUCCESS
+contact tags,SUCCESS
+""
+Email Outreach
+Low Level Outreach
+SDR + Account,Successes,Errors,Duplicates
+Ellen Scott-Young: yaronsinger,28,0,12
+Duplicated Contacts
+Email,SFDC Account: Account Name,First Name
+abaruch@spoton.com,SpotOn,Amir
+danaia@monzo.com,Monzo,Danai
+dmartyanov@snap.com,Snap Inc.,Dmitry
+eagwu@solocal.com,Solocal,Elbby
+fnielsen@miele.com,Miele,Florian
+gaddyw@amdocs.com,Amdocs,Gaddy
+hfarinas@fitbit.com,Fitbit,Hulya
+jimena@verse.me,Verse,Jimena
+jwoo@amerantbank.com,Amerant,James
+mustafa.gueler@adlinktech.com,ADLINK Technology,Mustafa
+praveena.pillarisetty@equinox.com,Equinox Holdings,Praveena
+richard.salaway@virginpulse.com,Virgin Pulse,Richard
+Ellen Scott-Young: yarons,40,0,0
+Katherine Hess: yaron_s,28,0,12
+Duplicated Contacts
+Email,SFDC Account: Account Name,First Name
+arvind.pawar@brado.net,Brado,Arvind
+ilias.soumpasis@cmrsurgical.com,CMR Surgical,Ilias
+matthew.barty@cmrsurgical.com,CMR Surgical,Matthew
+pkassakian@twitter.com,Twitter,Peter
+sagar.nangare@gslab.com,gslab,Sagar
+sandraduenas@digital.mercer.com,Mercer,Sandra
+sara.inigo@vistex.com,Vistex,Sara
+sudharsan.s@concord.net,Concord Technologies,Sudharsan
+suneelk.in@mouritech.com,MOURI Tech,Suneel
+tan.tran@fmapprovals.com,FM Global,Tan
+tatousha_smith@glic.com,Guardian Life,Tatousha
+utkarsh.goyal@vistex.com,Vistex,Utkarsh
+Katherine Hess: ys,9,1,8
+Duplicated Contacts
+Email,SFDC Account: Account Name,First Name
+achala.acharya@deluxe.com,Deluxe,Achala
+brook.peterson@sportsengine.com,SportsEngine,Brook
+chrish@zvelo.com,zvelo,Chris
+dwadhwa@sentientscience.com,Sentient Science,Deepan
+jenne.zhang@scm.ca,Opta,Jenne
+moshe.kellerstein@scm.ca,Opta,Moshe
+riya.suchdev@crowdstar.com,Glu Mobile,Riya
+sshi@triplelift.com,Triple Lift,Shi
+Sophia Serseri: ysinger,39,0,1
+Duplicated Contacts
+Email,SFDC Account: Account Name,First Name
+michel.s@theguardian.com,The Guardian,Michel
+Sophia Serseri: y-singer,39,0,1
+Duplicated Contacts
+Email,SFDC Account: Account Name,First Name
+idan.sternschuss@appsflyer.com,AppsFlyer,Idan
+Ryan Hutzley: yaron-singer,40,0,0
+Ryan Hutzley: ysing,6,0,0
+Mark Levinson: yaron_singer,40,0,0
+Mark Levinson: y_singer,39,0,1
+Duplicated Contacts
+Email,SFDC Account: Account Name,First Name
+saad.joiya@systemsltd.com,Systems limited,Saad
+""
+High Level Outreach
+SDR + Account,Successes,Errors,Duplicates
+Ellen Scott-Young: yaronsinger,8,0,1
+Duplicated Contacts
+Email,SFDC Account: Account Name,First Name
+vtanikella@sutherlandglobal.com,Sutherland,Vijay
+Ellen Scott-Young: yarons,9,0,0
+Katherine Hess: yaron_s,8,0,0
+Sophia Serseri: ysinger,9,0,0
+Sophia Serseri: y-singer,9,0,0
+Ryan Hutzley: yaron-singer,3,0,0
+Mark Levinson: yaron_singer,9,0,0
+Mark Levinson: y_singer,9,0,0
+""
+Business Value Experiment
+SDR + Account,Successes,Errors,Duplicates
+Ellen Scott-Young: yaronsinger,3,0,0
+Ellen Scott-Young: yarons,5,0,0
+Katherine Hess: yaron_s,2,0,0
+Katherine Hess: ys,1,0,0
+Sophia Serseri: ysinger,1,0,0
+Sophia Serseri: y-singer,5,0,0
+Ryan Hutzley: yaron-singer,0,0,0
+Ryan Hutzley: ysing,5,0,0
+Mark Levinson: yaron_singer,1,0,0
+Mark Levinson: y_singer,3,0,0
+""

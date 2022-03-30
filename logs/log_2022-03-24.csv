@@ -1,0 +1,110 @@
+Data Ingestion
+Data Title,Status
+underworked_no_emai,SUCCESS
+underworked_email,SUCCESS
+all_inds_no_email,SUCCESS
+all_inds_email,SUCCESS
+company_linkedinURL,SUCCESS
+contact_linkedinURL,SUCCESS
+bounced_given_contacs,SUCCESS
+contact tags,SUCCESS
+""
+Email Outreach
+Low Level Outreach
+SDR + Account,Successes,Errors,Duplicates
+Ellen Scott-Young: yaronsinger,24,0,16
+Duplicated Contacts
+Email,SFDC Account: Account Name,First Name
+abaruch@spoton.com,SpotOn,Amir
+arihant.jain@iifl.com,IIFL,Arihant
+danaia@monzo.com,Monzo,Danai
+eblondel@solocal.com,Solocal,Edouard
+hcluff@acrisuretechnology.com,Acrisure,Hana
+hfarinas@fitbit.com,Fitbit,Hulya
+keaton.smith@multiplan.com,MultiPlan,Keaton
+ldeoliveira@twilio.com,Twilio,Luke de
+mustafa.gueler@adlinktech.com,ADLINK Technology,Mustafa
+praveena.pillarisetty@equinox.com,Equinox Holdings,Praveena
+richard.salaway@virginpulse.com,Virgin Pulse,Richard
+scott.moore@publicissapient.com,Publicis Sapient,Scott
+sharad@extend.com,Extend,Sharad
+steven@stripe.com,Stripe,Steven
+vabhishek@snap.com,Snap Inc.,Vineet
+z.li@mediacorp.sg,Mediacorp,Zhen
+Ellen Scott-Young: yarons,40,0,0
+Katherine Hess: yaron_s,20,1,19
+Duplicated Contacts
+Email,SFDC Account: Account Name,First Name
+aaustin@plex.com,Plex Systems,Anthony
+achala.acharya@deluxe.com,Deluxe,Achala
+arvind.pawar@brado.net,Brado,Arvind
+brook.peterson@sportsengine.com,SportsEngine,Brook
+chrish@zvelo.com,zvelo,Chris
+dwadhwa@sentientscience.com,Sentient Science,Deepan
+ilias.soumpasis@cmrsurgical.com,CMR Surgical,Ilias
+jenne.zhang@scm.ca,Opta,Jenne
+matthew.barty@cmrsurgical.com,CMR Surgical,Matthew
+moshe.kellerstein@scm.ca,Opta,Moshe
+pkassakian@twitter.com,Twitter,Peter
+sagar.nangare@gslab.com,gslab,Sagar
+sandraduenas@digital.mercer.com,Mercer,Sandra
+sara.inigo@vistex.com,Vistex,Sara
+sshi@triplelift.com,Triple Lift,Shi
+steve.wiper@hyatt.com,Hyatt Hotels & Resorts,Steve
+sudharsan.s@concord.net,Concord Technologies,Sudharsan
+tan.tran@fmapprovals.com,FM Global,Tan
+tatousha_smith@glic.com,Guardian Life,Tatousha
+Katherine Hess: ys,6,0,0
+Sophia Serseri: ysinger,38,0,2
+Duplicated Contacts
+Email,SFDC Account: Account Name,First Name
+idan.sternschuss@appsflyer.com,AppsFlyer,Idan
+karina.silveira@lexisnexis.com,LexisNexis,Karina
+Sophia Serseri: y-singer,40,0,0
+Ryan Hutzley: yaron-singer,12,0,1
+Duplicated Contacts
+Email,SFDC Account: Account Name,First Name
+jonathan@datagen.tech,Datagen Technology,Jonathan
+Mark Levinson: yaron_singer,38,0,1
+Duplicated Contacts
+Email,SFDC Account: Account Name,First Name
+saad.joiya@systemsltd.com,Systems limited,Saad
+Mark Levinson: y_singer,38,0,1
+Duplicated Contacts
+Email,SFDC Account: Account Name,First Name
+elena@aurorapharmaceutical.com,Vertex Pharmaceuticals,Elena
+""
+High Level Outreach
+SDR + Account,Successes,Errors,Duplicates
+Ellen Scott-Young: yaronsinger,7,0,2
+Duplicated Contacts
+Email,SFDC Account: Account Name,First Name
+craig.hartman@broadcom.com,Broadcom,Craig
+jitendra.tawri@bnymellon.com,BNY Mellon,Jitendra
+Ellen Scott-Young: yarons,9,0,0
+Katherine Hess: yaron_s,1,0,0
+Sophia Serseri: ysinger,9,0,0
+Sophia Serseri: y-singer,8,0,0
+Ryan Hutzley: yaron-singer,9,0,0
+Ryan Hutzley: ysing,7,0,0
+Mark Levinson: yaron_singer,7,0,1
+Duplicated Contacts
+Email,SFDC Account: Account Name,First Name
+benjamin.lee@brightinsight.com,BrightInsight,Benjamin
+Mark Levinson: y_singer,9,0,0
+""
+Business Value Experiment
+SDR + Account,Successes,Errors,Duplicates
+Ellen Scott-Young: yaronsinger,2,0,0
+Ellen Scott-Young: yarons,5,0,0
+Katherine Hess: yaron_s,1,0,0
+Sophia Serseri: ysinger,2,0,0
+Sophia Serseri: y-singer,4,0,0
+Ryan Hutzley: yaron-singer,2,0,1
+Duplicated Contacts
+Email,SFDC Account: Account Name,First Name
+jonathan@datagen.tech,Datagen Technology,Jonathan
+Ryan Hutzley: ysing,3,0,0
+Mark Levinson: yaron_singer,1,0,0
+Mark Levinson: y_singer,5,0,0
+""

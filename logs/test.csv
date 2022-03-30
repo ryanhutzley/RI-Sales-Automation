@@ -1,0 +1,71 @@
+Data Ingestion
+Data Title,Status
+""
+Email Outreach
+Low Level Outreach
+SDR + Account,Successes,Errors,Duplicates
+Ellen Scott-Young: yaronsinger,0,0,1
+Duplicated Contacts
+Email,SFDC Account: Account Name,First Name
+abaruch@spoton.com,SpotOn,Amir
+Ellen Scott-Young: yarons,0,0,1
+Duplicated Contacts
+Email,SFDC Account: Account Name,First Name
+jwoo@amerantbank.com,Amerant,James
+Katherine Hess: yaron_s,0,0,1
+Duplicated Contacts
+Email,SFDC Account: Account Name,First Name
+steve.wiper@hyatt.com,Hyatt Hotels & Resorts,Steve
+Katherine Hess: ys,0,0,1
+Duplicated Contacts
+Email,SFDC Account: Account Name,First Name
+pkassakian@twitter.com,Twitter,Peter
+Sophia Serseri: ysinger,1,0,0
+Sophia Serseri: y-singer,0,0,1
+Duplicated Contacts
+Email,SFDC Account: Account Name,First Name
+idan.sternschuss@appsflyer.com,AppsFlyer,Idan
+Ryan Hutzley: yaron-singer,0,0,1
+Duplicated Contacts
+Email,SFDC Account: Account Name,First Name
+jonathan@datagen.tech,Datagen Technology,Jonathan
+Mark Levinson: yaron_singer,1,0,0
+Mark Levinson: y_singer,1,0,0
+""
+High Level Outreach
+SDR + Account,Successes,Errors,Duplicates
+Ellen Scott-Young: yaronsinger,0,0,1
+Duplicated Contacts
+Email,SFDC Account: Account Name,First Name
+drapp@proofpoint.com,Proofpoint,Dan
+Ellen Scott-Young: yarons,0,0,1
+Duplicated Contacts
+Email,SFDC Account: Account Name,First Name
+eric.silberstein@klaviyo.com,Klaviyo,Eric
+Katherine Hess,0,0,0
+Sophia Serseri: ysinger,1,0,0
+Sophia Serseri: y-singer,1,0,0
+Ryan Hutzley: yaron-singer,1,0,0
+Ryan Hutzley: ysing,1,0,0
+Mark Levinson: yaron_singer,0,0,0
+Mark Levinson: y_singer,0,0,1
+Duplicated Contacts
+Email,SFDC Account: Account Name,First Name
+benjamin.lee@brightinsight.com,BrightInsight,Benjamin
+""
+Business Value Experiment
+SDR + Account,Successes,Errors,Duplicates
+Ellen Scott-Young: yaronsinger,1,0,0
+Ellen Scott-Young: yarons,1,0,0
+Katherine Hess: yaron_s,1,0,0
+Katherine Hess: ys,0,0,0
+Sophia Serseri: ysinger,1,0,0
+Sophia Serseri: y-singer,1,0,0
+Ryan Hutzley: yaron-singer,0,0,1
+Duplicated Contacts
+Email,SFDC Account: Account Name,First Name
+jonathan@datagen.tech,Datagen Technology,Jonathan
+Ryan Hutzley: ysing,1,0,0
+Mark Levinson: yaron_singer,1,0,0
+Mark Levinson: y_singer,1,0,0
+""
